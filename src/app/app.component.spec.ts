@@ -1,31 +1,57 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { BrowserModule, By } from '@angular/platform-browser';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
         AppComponent
       ],
-    }).compileComponents();
+      imports: [
+        BrowserModule,
+        FormsModule,
+        ReactiveFormsModule
+      ],
+    });
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
   });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
-  it(`should have as title 'AngularUnitTesting'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('AngularUnitTesting');
+  it(`should start with 0'`, () => {
+    expect(component.count).toEqual(0);
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+  it('should increment by one when button clicked', fakeAsync(() => {
     fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('AngularUnitTesting app is running!');
-  });
+    let buttonElement = fixture.debugElement.query(By.css('#increase-count'));
+    buttonElement.triggerEventHandler('click', null);
+    fixture.detectChanges();
+
+    fixture.whenStable().then(() => {
+      expect(component.count).toBe(1);
+    });
+  }));
+
+  it('should set variable to selected list item', fakeAsync(() => {
+    fixture.detectChanges();
+    const select: HTMLSelectElement = fixture.debugElement.query(By.css('#cars')).nativeElement;
+    select.click();
+    fixture.detectChanges();
+    const selectedValue = select.options[1];
+    select.value = selectedValue.value;
+    select.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      expect(component.carType).toBe(selectedValue.innerHTML.toLowerCase());
+    });
+  }));
 });

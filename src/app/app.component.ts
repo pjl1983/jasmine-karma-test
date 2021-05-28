@@ -6,5 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'AngularUnitTesting';
+  count = 0;
+  carType = 'volvo';
+
+  increaseCount() {
+    this.count += 1;
+  }
+
 }
